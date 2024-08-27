@@ -1,4 +1,4 @@
-from lz77 import LZ
+from src.lempel_ziv.lz77 import  LZ
 
 
 class LZSS(LZ):

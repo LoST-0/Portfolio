@@ -1,11 +1,10 @@
 
 import numpy as np
 import pandas as pd
-
 import matplotlib.pyplot as plt
-from functools import lru_cache
 
-from sais import sais_construction
+from src.utils import *
+from src.burrows_wheeler.sais import sais_construction
 
 
 
@@ -13,10 +12,10 @@ from sais import sais_construction
 class BWT:
   def __init__(self) -> None:
     pass
-    
+
   def __get_cyclic_rotations(self,text) -> list:
     return [text[x:]+text[:x] for x in range(len(text))]
-  
+
   def fl_mapping(self,L):
     F = sorted(L)
     fl_map = {}
@@ -53,7 +52,8 @@ class BWT:
     ])
 
     return L,I
-  
+
+  @staticmethod
   def sais_transform(self,text,suffix_array):
       n = len(text)
       bwt = []
@@ -66,31 +66,7 @@ class BWT:
       
       return ''.join(bwt), np.where(suffix_array == 0)[0][0]
 
-@lru_cache(maxsize=64)
-def fibonacci_word(order):
-  if order<0:
-    return ''
-  elif order == 0:
-    return "b"
-  elif order == 1:
-    return "a"
-  else:
-    return fibonacci_word(order - 1) + fibonacci_word(order - 2)
-    
 
-def count_equal_letter_run(text):
-    if not text:
-        return 0
-
-    run_count = 1
-    current_char = text[0]
-
-    for char in text[1:]:
-        if char != current_char:
-            run_count += 1
-            current_char = char
-
-    return run_count
 
 
 

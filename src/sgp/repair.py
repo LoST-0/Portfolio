@@ -1,8 +1,8 @@
 
-import random
-import heapq
+
 import string
 from collections import defaultdict, deque
+from src.utils import *
 
 NON_TERMINALS = list(string.ascii_uppercase + string.digits)
 
@@ -137,20 +137,6 @@ def testcase(r:RePairCompression,text:str):
     
     return
 
-
-def generate_random_text(alphabet, run_equal, len_text):
-
-    if not alphabet or run_equal <= 0 or len_text <= 0:
-        raise ValueError(
-            "Alphabet must not be empty, and run_equal and len_text must be positive integers.")
-
-    text = []
-    while len(text) < len_text:
-        char = random.choice(alphabet)
-        run_length = min(run_equal, len_text - len(text))
-        text.extend(char * run_length)
-
-    return ''.join(text)
 
 def main():
   

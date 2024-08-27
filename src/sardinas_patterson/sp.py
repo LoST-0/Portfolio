@@ -160,13 +160,15 @@ def parse_input(file_path):
 
 
 if __name__ == "__main__":
+    '''
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--input', help='Path to input JSON file', required=True)
     args = parser.parse_args()
+    '''
 
     try:
-        input_data = parse_input(args.input)
+        input_data = parse_input("./test/sp_tests.json")#args.input)
         main(input_data)
     except FileNotFoundError as e:
         print(e)

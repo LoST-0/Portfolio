@@ -19,7 +19,6 @@ class StringAttractor:
   
   
 def main():
-  
   positions = [3,6,10,11]
   text = "CDABCCDABCCA"
   s = StringAttractor(positions=positions)
@@ -28,9 +27,6 @@ def main():
   positions = [0,1,2,3]
   s.positions = positions
   print(s.is_string_attractor_for(text=text))
-  
-  
-  
   return
 
 if __name__ == "__main__":
