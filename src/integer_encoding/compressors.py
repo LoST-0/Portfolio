@@ -8,10 +8,10 @@ class IntegerCompressor:
     pass
 
   def compress(self, integers: list) -> list:
-    return None
+    raise NotImplementedError
 
   def decompress(self, compressed_integers: list) -> list:
-    return None
+    raise NotImplementedError
 
 
 class BinaryCompressor(IntegerCompressor):
@@ -19,6 +19,7 @@ class BinaryCompressor(IntegerCompressor):
   def __init__(self):
 
     super().__init__("BinaryCompressor")
+    self.bit_limit = None
 
   def compress(self, integers: list, optim=False) -> list:
     m = max(integers)
@@ -86,8 +87,6 @@ class DeltaCompressor(IntegerCompressor):
     decompressed = []
     for cinteger in compressed_integers:
       L = cinteger.index("1")
-      offset = cinteger[L:2*L+1]
-      offset = int(offset, 2)
       N = "1" + cinteger[2*L+1:]
       decompressed.append(
           int(N, 2)
@@ -143,7 +142,8 @@ class FibonacciCompressor(IntegerCompressor):
 
       return self.__get_fibonacci_sum(integer, elements, index)
 
-  def __fibonacci_encode(self, sequence: list, integer: int) -> str:
+  @staticmethod
+  def __fibonacci_encode(sequence: list) -> str:
 
     _, max_index = sequence[0]
     fib = [0]*(max_index-2) + [1]
@@ -166,7 +166,7 @@ class FibonacciCompressor(IntegerCompressor):
     compressed = []
     for integer in integers:
       fibonaccis_sequence = self.__get_fibonacci_sum(integer, [], 0)
-      finteger = self.__fibonacci_encode(fibonaccis_sequence, integer)
+      finteger = self.__fibonacci_encode(fibonaccis_sequence)
       compressed.append(finteger)
     return compressed
 

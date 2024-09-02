@@ -5,6 +5,20 @@ import math
 
 from functools import lru_cache
 
+
+class TreeNode:
+    def __init__(self, value, symbol=None):
+        self.value = value
+        self.symbol = symbol
+        self.left = None
+        self.right = None
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __repr__(self):
+        return f"Node({self.value}, {self.symbol})"
+
 @lru_cache(maxsize=64)
 def fibonacci_word(order):
     if order < 0:
@@ -54,18 +68,19 @@ def get_custom_distribution(p, lower_bound=1, upper_bound=1000, step=1):
     return distribution
 
 
-def get_distribution(type=1, lower_bound=1, upper_bound=1000, step=1):
+def get_distribution(distribution_type=1, lower_bound=1, upper_bound=1000, step=1):
     distribution = []
-    if type == 0:
+    p = lambda  x: x
+    if distribution_type == 0:
         distribution.extend([
             random.randint(lower_bound, upper_bound)
             for _ in range(lower_bound, upper_bound + 1, step)
         ])
         distribution.sort()
         return distribution
-    elif type == 1:
+    elif distribution_type == 1:
         p = lambda x: 1 / (2 * x ** 2)
-    elif type == 2:
+    elif distribution_type == 2:
         p = lambda x: 1 / (2 * x * (math.log(x)) ** 2)
 
     distribution = get_custom_distribution(p, lower_bound=max(2, lower_bound), upper_bound=upper_bound, step=step)

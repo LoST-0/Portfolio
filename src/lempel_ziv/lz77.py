@@ -4,38 +4,43 @@ class LZ:
         self.lk_begin = 0
         return
 
+    @staticmethod
+    def _find_max_prefix(sb: str, lkb: str):
+        max_len = 0
+        max_start = -1
+        sb_len = len(sb)
+        lkb_len = len(lkb)
+
+        for i in range(sb_len - 1, -1, -1):
+            j = 0
+            while i + j < sb_len and j < lkb_len and sb[i + j] == lkb[j]:
+                j += 1
+
+            if j > max_len:
+                max_len = j
+                max_start = i
+
+        return max_start, max_len
 
 
 class LZ77(LZ):
     def __init__(self, window_size) -> None:
         super().__init__(window_size)
-      
-    def _find_max_prefix(self, sb:str, lkb:str):
-        max_len = 0
-        max_start = -1
-        sb_len = len(sb)
-        lkb_len = len(lkb)
-        
-        for i in range(sb_len - 1, -1, -1):
-            j = 0
-            while i + j < sb_len and j < lkb_len and sb[i + j] == lkb[j]:
-                
-                j += 1
-               
-            if j > max_len:
-                max_len = j
-                max_start = i
-        if sb[max_start:max_start+max_len].startswith(lkb[max_len:-1]):
-          max_len += len(lkb[max_len:-1])
-        
-        return max_start, max_len
+        self.text_len = None
 
+    @classmethod
+    def _find_max_prefix(cls, sb: str, lkb: str):
+        max_start, max_len = super(cls, cls)._find_max_prefix(sb=sb, lkb=lkb)
+        if sb[max_start:max_start + max_len].startswith(lkb[max_len:-1]):
+            max_len += len(lkb[max_len:-1])
+
+        return max_start, max_len
 
     def __find_triple(self, text: str):
     
-        sb_start = max(0, self.lk_begin - self.W) 
+        sb_start = max(0, self.lk_begin - (self.W // 2))
         sb = text[sb_start:self.lk_begin]  
-        lkb = text[self.lk_begin:]  
+        lkb = text[self.lk_begin:self.lk_begin + (self.W // 2)]
 
         if not lkb:
             return None  
@@ -43,17 +48,17 @@ class LZ77(LZ):
         offset, match_len = self._find_max_prefix(sb, lkb)
                 
         if offset == -1:
-            return (0, 0, lkb[0])  
+            return 0, 0, lkb[0]
 
         
         real_offset = self.lk_begin - (sb_start + offset)
         next_char = lkb[match_len] if match_len < len(lkb) else lkb[-1]
 
-        return (real_offset, match_len, next_char)
+        return real_offset, match_len, next_char
 
     def compress(self, text: str) -> list:
         compressed_text = []
-        self.lk_begin = 0  
+        self.lk_begin = 0
         self.text_len = len(text)
 
         while self.lk_begin < len(text):
@@ -65,11 +70,10 @@ class LZ77(LZ):
             self.lk_begin += triple[1] + 1
 
         return compressed_text
-      
-    def decompress(self,compressed_text:list) -> str:
-      
-        output = ""
 
+    @staticmethod
+    def decompress(compressed_text:list) -> str:
+        output = ""
         for triple in compressed_text:
             o,l,c = triple
             for _ in range(l):
@@ -77,11 +81,6 @@ class LZ77(LZ):
             output += c
 
         return output
-
-
-  
-      
-
 
 def main():
   text = "cabracadabrarrarrad"

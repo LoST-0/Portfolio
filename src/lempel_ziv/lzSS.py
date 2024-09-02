@@ -5,8 +5,8 @@ class LZSS(LZ):
   
   def __init__(self, window_size) -> None:
     super().__init__(window_size)
-    
-    
+    self.text_len = None
+
   def __find_pair(self,text):
     
     sb_start = max(0, self.lk_begin - self.W)
@@ -19,28 +19,11 @@ class LZSS(LZ):
     offset, match_len = self._find_max_prefix(sb,lkb)
     
     if offset == -1:
-        return (0, lkb[0])   
+        return 0, lkb[0]
     real_offset = self.lk_begin - (sb_start + offset)
     
-    return (real_offset, match_len)
+    return real_offset, match_len
   
-  def _find_max_prefix(self, sb:str, lkb:str):
-        max_len = 0
-        max_start = -1
-        sb_len = len(sb)
-        lkb_len = len(lkb)
-        
-        for i in range(sb_len - 1, -1, -1):
-            j = 0
-            while i + j < sb_len and j < lkb_len and sb[i + j] == lkb[j]:
-                
-                j += 1
-               
-            if j > max_len:
-                max_len = j
-                max_start = i
-                
-        return max_start,max_len
 
   def compress(self, text: str) -> list:
       compressed_text = []
@@ -57,10 +40,10 @@ class LZSS(LZ):
 
       return compressed_text
     
-  def decompress(self, compressed_text: list) -> str:
+  @staticmethod
+  def decompress(compressed_text: list) -> str:
      output = ""
      for v, p in compressed_text:
-       
        if v:
          for _ in range(p):
            output += output[-v]

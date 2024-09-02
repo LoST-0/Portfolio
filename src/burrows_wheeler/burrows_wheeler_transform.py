@@ -1,8 +1,6 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-
 from src.utils import *
 from src.burrows_wheeler.sais import sais_construction
 
@@ -13,11 +11,14 @@ class BWT:
   def __init__(self) -> None:
     pass
 
-  def __get_cyclic_rotations(self,text) -> list:
+  @staticmethod
+  def __get_cyclic_rotations(text) -> list:
     return [text[x:]+text[:x] for x in range(len(text))]
 
-  def fl_mapping(self,L):
+  @staticmethod
+  def fl_mapping(L):
     F = sorted(L)
+
     fl_map = {}
     count_L = {char: 0 for char in set(L)}
   
@@ -41,6 +42,7 @@ class BWT:
     for _ in range(0,len(L)):
       w += F[mapped]
       mapped = tau[mapped]
+
     return w[::-1]
        
   def transform(self,text): 
@@ -54,8 +56,10 @@ class BWT:
     return L,I
 
   @staticmethod
-  def sais_transform(self,text,suffix_array):
+  def sais_transform(text,suffix_array):
+
       n = len(text)
+
       bwt = []
       for i in range(n):
           suffix_index = suffix_array[i]
@@ -65,9 +69,6 @@ class BWT:
               bwt.append(text[suffix_index - 1])
       
       return ''.join(bwt), np.where(suffix_array == 0)[0][0]
-
-
-
 
 
 def run_test(text, bwt):
@@ -86,15 +87,19 @@ def run_test(text, bwt):
 
     print("SAIS-Test")
     # Construct the suffix array
+    if text[-1] != "$":
+        text += "$"
+
     suffix_array = sais_construction(text)
 
-    print(f"Suffix Array: {suffix_array}")
+    #print(f"Suffix Array: {suffix_array}")
 
     # Run BWT using SA-IS
     L, I = bwt.sais_transform(text, suffix_array)
-    w = bwt.reverse_transform(L, I)
+    w = bwt.reverse_transform(L,I)
 
-    print(f"SAIS-BWT({text}$): ", L)
+
+    print(f"SAIS-BWT({text}): ", L)
     print(f"SAIS-IBWT({L}): ", w)
 
     rs = count_equal_letter_run(L)
@@ -103,15 +108,14 @@ def run_test(text, bwt):
 
 
 def main():
-    order = 4
+    order = 3
     bwt = BWT()
     testcases = [
+        "amanaplanacanalpanama",
         fibonacci_word(order),
         fibonacci_word(order * 2),
-        fibonacci_word(order * 3),
         fibonacci_word(order)[:-1],
         fibonacci_word(order * 2)[:-1],
-        fibonacci_word(order * 3)[:-1],
     ]
 
     runs = []
@@ -126,6 +130,8 @@ def main():
     print("-" * 20)
     print("Results:")
     print(df)
+
+
     
     df.plot(kind='bar', figsize=(10, 6))
 

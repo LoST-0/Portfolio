@@ -11,11 +11,11 @@ class RePairCompression:
     def __init__(self):
         self.non_terminal_counter = 0
 
-    def __get_next_non_terminal(self):
-        
+    @staticmethod
+    def __get_next_non_terminal():
         return NON_TERMINALS.pop()
-
-    def __scan_text(self, text):
+    @staticmethod
+    def __scan_text(text):
         pairs = defaultdict(int)
         pair_indices = defaultdict(list)
 
@@ -26,8 +26,8 @@ class RePairCompression:
             pair_indices[pair].append(i)
 
         return pairs, pair_indices
-
-    def __get_most_frequent(self, pairs):
+    @staticmethod
+    def __get_most_frequent(pairs):
         most_frequent = max(pairs.items(), key=lambda x: x[1])
         return most_frequent[0], pairs[most_frequent[0]]
 
@@ -65,8 +65,8 @@ class RePairCompression:
                 i += 1
 
         return grammar, ''.join(text)
-
-    def decompress(self, grammar, ctext):
+    @staticmethod
+    def decompress(grammar, ctext):
         text = deque(ctext)
         result = []
         while text:
@@ -78,8 +78,8 @@ class RePairCompression:
                 result.append(c)
 
         return ''.join(result)
-
-    def grammar_size(self,grammar):
+    @staticmethod
+    def grammar_size(grammar):
       size = 0
       for expansion in  grammar.values():
         size += len(expansion)
@@ -90,8 +90,9 @@ class RePairCNFCompression(RePairCompression):
   
   def __init__(self):
       super().__init__()
-      
-  def __trivial_pairing(self,ctext:str,S):
+
+  @staticmethod
+  def __trivial_pairing(ctext:str,S):
     fgrammar = {}
     for index,nterminal in enumerate(ctext):
       if index == len(ctext) - 1:
@@ -113,8 +114,9 @@ class RePairCNFCompression(RePairCompression):
       grammar = self.__trivial_pairing(ctext,A)
       grammar.update(bgrammar)
       return grammar, grammar[A]
-    
-  def __substitute_all_terminals(self,text:str) -> tuple[str,dict]:
+
+  @staticmethod
+  def __substitute_all_terminals(text:str) -> tuple[str,dict]:
     text = text.upper()
     uniques = list(set(text))
     for c in uniques:

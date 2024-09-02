@@ -1,19 +1,5 @@
 import math
-
-class TreeNode:
-    def __init__(self, value, symbol=None):
-        self.value = value
-        self.symbol = symbol
-        self.left = None
-        self.right = None
-
-    def __lt__(self, other):
-        return self.value < other.value
-
-    def __repr__(self):
-        return f"Node({self.value}, {self.symbol})"
-
-    
+from src.utils import TreeNode
 
 
 

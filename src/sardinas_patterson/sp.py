@@ -1,11 +1,13 @@
+#import argparse
 import json
-import argparse
 import os
 
 
 
 class Codex:
-    def __init__(self, codebook={}):
+    def __init__(self, codebook=None):
+        if codebook is None:
+            codebook = {}
         self.mapping = codebook
 
     def __str__(self):
@@ -19,14 +21,12 @@ class SPChecker:
         self.pairings = []
         self.seen = []
         
-    def _flush(self):
+    def __flush(self):
         self.codewords = None
         self.pairings = []
         self.seen = []
 
-
     def find_factorizations(self, remaining_path, current_factorization):
-      
           if not remaining_path: 
                 return [current_factorization]
 
@@ -41,6 +41,7 @@ class SPChecker:
     def _factorize(self, path):
       if not path:
         return None
+
       all_factorizations = self.find_factorizations(path, [])
     
       if len(all_factorizations) < 2:
@@ -52,8 +53,6 @@ class SPChecker:
 
       return s1, s2
 
-
-      
       
     def next_suffix_set(self, S_i):
         S_i_plus_1 = set()
@@ -70,8 +69,9 @@ class SPChecker:
 
         self.pairings.append(pairs)
         return S_i_plus_1
-        
-    def _get_pair_index(self,pairing,cw):
+
+    @staticmethod
+    def __get_pair_index(pairing,cw):
       for index,(x,y,w) in enumerate(pairing):
         if cw == w:
           return index,(x,y,w)
@@ -90,10 +90,10 @@ class SPChecker:
       
       for pairing in self.pairings:
         
-        index,pair = self._get_pair_index(pairing,cws)
+        index,pair = self.__get_pair_index(pairing,cws)
         if index is None:
           #Try the other way
-          index,pair = self._get_pair_index(pairing,yi+cwsp)
+          index,pair = self.__get_pair_index(pairing,yi+cwsp)
 
         if index is not None:  
           _,yi,_ = pair
@@ -106,42 +106,43 @@ class SPChecker:
      
       
           
-    def isUD(self, code: Codex):
+    def is_ud(self, code: Codex):
+
         S_0 = set(code.mapping.values())
         self.codewords = S_0
         S_i = S_0
 
         while S_i:
+
             S_i = self.next_suffix_set(S_i)
             S_i.discard('')
             
             if not S_i:
-                self._flush()
+                self.__flush()
                 return True, None
 
             if any(residual in self.codewords for residual in S_i):
                 nud_strings = self._get_not_unique_decomposition(S_i & S_0)
-                self._flush()
+                self.__flush()
                 return False, nud_strings
 
             if any(past == S_i for past in self.seen):
-                self._flush()
+                self.__flush()
                 return True, None
 
             self.seen.append(S_i)
 
-        self._flush()
+        self.__flush()
         return True, None
 
 
 def main(raw_codes):
     checker = SPChecker()
-
     for code in raw_codes:
         # Create Codex instances
         codex = Codex(raw_codes[code])
         # Check if the code is uniquely decodable
-        is_ud, factorization = checker.isUD(codex)
+        is_ud, factorization = checker.is_ud(codex)
         print("Code:", codex)
         print("Is UD:", is_ud)
         if not is_ud:
