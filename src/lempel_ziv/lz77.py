@@ -31,6 +31,7 @@ class LZ77(LZ):
     @classmethod
     def _find_max_prefix(cls, sb: str, lkb: str):
         max_start, max_len = super(cls, cls)._find_max_prefix(sb=sb, lkb=lkb)
+
         if sb[max_start:max_start + max_len].startswith(lkb[max_len:-1]):
             max_len += len(lkb[max_len:-1])
 
@@ -52,7 +53,7 @@ class LZ77(LZ):
 
         
         real_offset = self.lk_begin - (sb_start + offset)
-        next_char = lkb[match_len] if match_len < len(lkb) else lkb[-1]
+        next_char = lkb[match_len] if match_len < len(lkb) else 'EOF'
 
         return real_offset, match_len, next_char
 
@@ -83,7 +84,7 @@ class LZ77(LZ):
         return output
 
 def main():
-  text = "cabracadabrarrarrad"
+  text = "aacaacabcabaaac"
   compressor = LZ77(16)
   compressed_text = compressor.compress(text)
   decompresses_text = compressor.decompress(compressed_text)

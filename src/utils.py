@@ -199,6 +199,7 @@ def balanced_parenthesis_word(n):
 @lru_cache(maxsize=128)
 def generate_binary_strings_recursive(n):
     # Base case: if n is 0, return an empty string
+
     if n == 0:
         return ['']
 
@@ -210,8 +211,8 @@ def generate_binary_strings_recursive(n):
 
     # Append '0' and '1' to each of the strings from the smaller_strings
     for s in smaller_strings:
-        result.append(s + '0')
-        result.append(s + '1')
+        result.append(s + "0")
+        result.append(s + "1")
 
     return result
 

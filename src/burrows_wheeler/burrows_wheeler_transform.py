@@ -70,6 +70,10 @@ class BWT:
       
       return ''.join(bwt), np.where(suffix_array == 0)[0][0]
 
+  def linear_transform(self,text):
+      suffix_array = sais_construction(text)
+      return  self.sais_transform(text,suffix_array)
+
 
 def run_test(text, bwt):
     print("-" * 20)
@@ -95,7 +99,7 @@ def run_test(text, bwt):
     #print(f"Suffix Array: {suffix_array}")
 
     # Run BWT using SA-IS
-    L, I = bwt.sais_transform(text, suffix_array)
+    L, I = bwt.linear_transform(text)
     w = bwt.reverse_transform(L,I)
 
 
