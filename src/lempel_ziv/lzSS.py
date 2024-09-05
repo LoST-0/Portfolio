@@ -1,4 +1,4 @@
-from src.lempel_ziv.lz77 import  LZ
+from src.lempel_ziv.lz77naive import  LZ
 
 
 class LZSS(LZ):
@@ -54,7 +54,7 @@ class LZSS(LZ):
 
 
 def main():
-  text = "aabbabab"
+  text = "aaaaaaaabbbbbbbb"
   compressor = LZSS(16)
   compressed_text = compressor.compress(text)
   decompresses_text = compressor.decompress(compressed_text)
@@ -63,5 +63,4 @@ def main():
 
 
 if __name__ == "__main__":
-  
   main()

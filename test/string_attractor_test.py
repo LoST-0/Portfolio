@@ -20,7 +20,7 @@ def testcase1(text):
     z = len(lz_text)
     lz_gamma = get_string_attractor_from_lz(lz_text)
     print(f"BWT({text})={bwt_text}")
-    print(f"LZSS{text}={lz_text}")
+    print(f"LZSS({text})={lz_text}")
     print(f"g_bwt(w): {bwt_gamma}, r :{r}")
     print(f"lz_gamma: {lz_gamma},  z:{z}")
     checker.positions = bwt_gamma
@@ -39,7 +39,7 @@ def testcase2(n=20):
     #alpha = (1 + 5 ** 0.5) / 2 - 1
     #rho = 0.0
     #sturmian_word = generate_sturmian_word(alpha,rho,n)
-    fibo_word     = [fibonacci_word(i) for i in range(1,n)]
+    fibo_word  = [fibonacci_word(i) for i in range(1,n)]
     bwt = BWT()
 
     for text in fibo_word:

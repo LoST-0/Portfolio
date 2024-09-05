@@ -1,6 +1,6 @@
 
 from src.utils import *
-from src.lempel_ziv.lz77 import LZ77
+from src.lempel_ziv.lz77_optim import LZ77
 from src.burrows_wheeler.burrows_wheeler_transform import BWT
 
 

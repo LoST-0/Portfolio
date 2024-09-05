@@ -61,17 +61,17 @@ def main():
   plot_results(results,xrange,compressors)
   
   ##### Distributions ####
-  distribution = get_distribution(distribution_type=0)
+  distribution = get_distribution(distribution_type=0) # Uniform
   results,xrange = testcase(compressors, is_random=True, distribution=distribution)
   plot_results(results, xrange, compressors,
                title="Compression Results of Different Compressors with uniform distribution")
   
-  distribution = get_distribution(distribution_type=1)
+  distribution = get_distribution(distribution_type=1) # 1/2x^2
   results,xrange = testcase(compressors, is_random=True, distribution=distribution)
   plot_results(results, xrange, compressors,
                title="Compression Results of Different Compressors with distribution p(x)=1/2x^2")
   
-  distribution = get_distribution(distribution_type=2)
+  distribution = get_distribution(distribution_type=2) # 1/ 2x*(log x)^2
   results, xrange = testcase(compressors, is_random=True, distribution=distribution)
   plot_results(results, xrange, compressors,
                title="Compression Results of Different Compressors with distribution p(x)=1/(2xlog^2(x))")
