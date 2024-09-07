@@ -80,6 +80,20 @@ def main():
     print(s.is_string_attractor_for(T=text))
 
 
+    positions = {2,4,6}
+    text = "𝑎𝑏𝑏𝑎𝑎𝑏𝑎𝑏𝑏𝑎𝑎𝑏"
+    s.positions = positions
+    s.show_attractor(text, positions)
+    print(s.is_string_attractor_for(T=text))
+
+    positions = {4,6,9,10}
+    text = "aaabaaaaaba"
+    s.positions = positions
+    s.show_attractor(text, positions)
+    print(s.is_string_attractor_for(T=text))
+
+
+
 if __name__ == "__main__":
     main()
 

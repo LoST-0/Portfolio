@@ -8,19 +8,40 @@ from functools import lru_cache
 
 class TreeNode:
     def __init__(self, value, symbol=None):
+        """Represents a node in a binary tree.
+
+        Attributes:
+            value: The value of the node.
+            symbol: An optional symbol associated with the node.
+            left: A reference to the left child node.
+            right: A reference to the right child node.
+        """
         self.value = value
         self.symbol = symbol
         self.left = None
         self.right = None
 
     def __lt__(self, other):
+        """Defines the behavior of the < (less than) operator for TreeNode objects."""
         return self.value < other.value
 
     def __repr__(self):
+        """Returns a string representation of the TreeNode."""
         return f"Node({self.value}, {self.symbol})"
 
 @lru_cache(maxsize=64)
 def fibonacci_word(order):
+    """Generates a Fibonacci word of a given order.
+
+    The Fibonacci word is constructed recursively:
+    F(0) = "b", F(1) = "a", F(n) = F(n-1) + F(n-2).
+
+    Args:
+        order: The order of the Fibonacci word to generate.
+
+    Returns:
+        A string representing the Fibonacci word of the given order.
+    """
     if order < 0:
         return ''
     elif order == 0:
@@ -32,6 +53,16 @@ def fibonacci_word(order):
 
 
 def count_equal_letter_run(text):
+    """Counts the number of distinct runs of equal letters in a string.
+
+    A run is defined as a maximal sequence of consecutive identical characters.
+
+    Args:
+        text: A string in which to count the runs.
+
+    Returns:
+        An integer representing the number of runs in the text.
+    """
     if not text:
         return 0
 
@@ -45,8 +76,20 @@ def count_equal_letter_run(text):
 
     return run_count
 
-##### Integer Encoding #####à#
+##### Integer Encoding #######
+
 def get_custom_distribution(p, lower_bound=1, upper_bound=1000, step=1):
+    """Generates a custom probability distribution based on a given probability function.
+
+    Args:
+        p: A function defining the probability distribution.
+        lower_bound: The lower bound of the range of values.
+        upper_bound: The upper bound of the range of values.
+        step: The step size between consecutive values in the range.
+
+    Returns:
+        A list representing a distribution of values based on the custom probability function.
+    """
     probabilities = []
 
     distribution = []
@@ -69,6 +112,20 @@ def get_custom_distribution(p, lower_bound=1, upper_bound=1000, step=1):
 
 
 def get_distribution(distribution_type=1, lower_bound=1, upper_bound=1000, step=1):
+    """Generates a distribution based on a specified type.
+
+    Args:
+        distribution_type: The type of distribution to generate.
+                          0: Uniform distribution
+                          1: 1/(2x^2) distribution
+                          2: 1/(2x(log(x))^2) distribution
+        lower_bound: The lower bound of the range of values.
+        upper_bound: The upper bound of the range of values.
+        step: The step size between consecutive values in the range.
+
+    Returns:
+        A sorted list representing the generated distribution.
+    """
     distribution = []
     p = lambda  x: x
     if distribution_type == 0:
@@ -90,6 +147,14 @@ def get_distribution(distribution_type=1, lower_bound=1, upper_bound=1000, step=
 
 def plot_results(results: list[list[int]], test_range: list[int], compressors,
                  title="Compression Results of Different Compressors"):
+    """Plots the results of different compression algorithms.
+
+    Args:
+        results: A list of lists, where each sublist contains the compression results for a given compressor.
+        test_range: A list representing the range of the original data.
+        compressors: A list of compressor functions/classes.
+        title: A string representing the title of the plot.
+    """
     num_compressors = len(results)
     plt.figure(figsize=(10, 6))
     for i in range(num_compressors):
@@ -109,13 +174,13 @@ def plot_results(results: list[list[int]], test_range: list[int], compressors,
 ###### String Attractors ######
 def get_runs(bwt_text: str) -> list:
     """
-    Get the start positions of each run in the BWT text.
+    Identifies the start positions of each run in the Burrows-Wheeler Transform (BWT) text.
 
-    Parameters:
-    bwt_text (str): The BWT of the text.
+    Args:
+        bwt_text: A string representing the BWT of the original text.
 
     Returns:
-    list: Positions corresponding to the beginning of each run in the BWT.
+        A list of integers representing the start positions of each run in the BWT text.
     """
     runs = []
     current_run_char = bwt_text[0]
@@ -133,11 +198,19 @@ def get_runs(bwt_text: str) -> list:
 
 
 def __get_cyclic_rotations(text) -> list:
+    """
+    Generates all cyclic rotations of a given string.
 
+    Args:
+        text: A string to generate cyclic rotations for.
+
+    Returns:
+        A list of tuples, where each tuple contains a cyclic rotation and its original starting position.
+    """
     return [(text[x:] + text[:x],x) for x in range(len(text))]
 
 
-def get_string_attractor_from_bwt(bwt_text: str, text: str) -> list:
+def get_string_attractor_from_bwt(text: str) -> list:
     """
     Generate the string attractor based on the BWT of the text.
 
@@ -148,22 +221,32 @@ def get_string_attractor_from_bwt(bwt_text: str, text: str) -> list:
     Returns:
     list: The positions that form the string attractor.
     """
-    # Get start positions of each run in the BWT text
-
-    run_positions_in_bwt = get_runs(bwt_text)
 
     rotations = __get_cyclic_rotations(text + "$")
     rotations = sorted(rotations, key=lambda x: x[0])
+
+    bwt_text = ''.join([rotation[0][-1] for rotation in rotations])
+
+
+    run_positions_in_bwt = get_runs(bwt_text)
+
     needed = [rotations[i][1] for i in run_positions_in_bwt]
 
-
-
-    # Map BWT positions back to the original text
+    needed.remove(0)
 
     return sorted(needed)
 
 
 def get_string_attractor_from_lz(lz_tokens:list) ->list:
+    """
+    Generates the string attractor based on LZSS compression tokens.
+
+    Args:
+        lz_tokens: A list of LZSS compression tokens.
+
+    Returns:
+        A list of integers representing the positions that form the string attractor.
+    """
     pos = 0  # Current position in the original text
     attractor = []
     for token in lz_tokens:
@@ -186,10 +269,13 @@ def generate_sturmian_word(alpha: float, rho: float, length: int) -> str:
     """
     Generates a finite Sturmian word based on the slope alpha and intercept rho.
 
-    :param alpha: The slope of the Sturmian word, an irrational number (0 < alpha < 1).
-    :param rho: The intercept of the Sturmian word, a real number (0 <= rho < 1).
-    :param length: The length of the Sturmian word to generate.
-    :return: A string representing the finite Sturmian word of the given length.
+    Args:
+        alpha: The slope of the Sturmian word, an irrational number (0 < alpha < 1).
+        rho: The intercept of the Sturmian word, a real number (0 <= rho < 1).
+        length: The length of the Sturmian word to generate.
+
+    Returns:
+        A string representing the finite Sturmian word of the given length.
     """
     sturmian_word = ""
 
@@ -213,6 +299,7 @@ def balanced_parenthesis_word(n):
     """
 
     def generate_parentheses(current_string, open_count, close_count, n, result):
+        """Recursively generates balanced parenthesis words."""
         # If the current string length is 2n, add to result
         if len(current_string) == 2 * n:
             result.append(current_string)
@@ -232,6 +319,21 @@ def balanced_parenthesis_word(n):
 
 @lru_cache(maxsize=128)
 def generate_binary_strings_recursive(n):
+    """
+    Generates all binary strings of length `n` using recursion.
+
+    This function recursively generates all possible combinations of binary strings (composed of '0' and '1')
+    of a given length `n`.
+
+    Args:
+        n: An integer representing the length of the binary strings to generate.
+
+    Returns:
+        A list of strings, where each string is a binary string of length `n`.
+
+    Raises:
+        None
+    """
     # Base case: if n is 0, return an empty string
 
     if n == 0:
@@ -254,7 +356,22 @@ def generate_binary_strings_recursive(n):
 ######## SGP
 
 def generate_random_text(alphabet, run_equal, len_text):
+    """Generates a random text string with specified run lengths.
 
+    This function generates a random text string of length `len_text` using the given `alphabet`.
+    The text is composed of repeated characters (runs) with a maximum length of `run_equal`.
+
+    Args:
+        alphabet: A list of characters from which the text will be generated.
+        run_equal: An integer representing the maximum length of runs of equal characters.
+        len_text: An integer representing the total length of the generated text.
+
+    Returns:
+        A string representing the generated text.
+
+    Raises:
+        ValueError: If the alphabet is empty, or if `run_equal` or `len_text` is not a positive integer.
+    """
     if not alphabet or run_equal <= 0 or len_text <= 0:
         raise ValueError(
             "Alphabet must not be empty, and run_equal and len_text must be positive integers.")
@@ -271,6 +388,21 @@ def generate_random_text(alphabet, run_equal, len_text):
 
 
 def set_Tk(k, i):
+    """Generates a list of specific binary patterns based on the given parameters.
+
+       This function creates a list of binary patterns by appending 'b' repeated `(j ** k)` times to 'a',
+       for all `j` from 1 to `i-1`.
+
+       Args:
+           k: An integer used as the exponent in the pattern generation.
+           i: An integer representing the upper bound of the pattern generation loop.
+
+       Returns:
+           A list of strings, where each string follows the pattern 'a' + 'b' * (j ** k).
+
+       Raises:
+           None
+    """
     i = max(1, i)
     Tk = []
     for j in range(1, i):
@@ -279,6 +411,20 @@ def set_Tk(k, i):
 
 
 def set_Wk(k=5):
+    """Generates a list of specific binary patterns based on the given parameter `k`.
+
+    This function creates a list of binary patterns, including specific sequences formed by
+    concatenating 'a' and 'b' characters, and applying certain rules based on the input `k`.
+
+    Args:
+        k: An integer representing the pattern complexity. Defaults to 5.
+
+    Returns:
+        A list of strings, where each string follows specific patterns defined by the input `k`.
+
+    Raises:
+        None
+    """
     k = max(k, 5)
     qk = "a" + "b" * k + "a"
     si = lambda x: "a" + "b" * x + "aa"
