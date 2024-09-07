@@ -45,7 +45,7 @@ def main():
         fibonacci_word(order * 3),
         fibonacci_word(order * 2)[:-1],
         fibonacci_word(order * 3)[:-1],
-    ]
+    ] + generate_binary_strings_recursive(5)
 
     runs = []
     for text in testcases:
@@ -62,6 +62,7 @@ def main():
     print(df)
 
     df.plot(kind='bar', figsize=(10, 6))
+    df.sort_values('Run BWT(T)', ascending=False, inplace=True)
 
     plt.title('BWT and SAIS-BWT Runs')
     plt.xlabel('Fibonacci Words')

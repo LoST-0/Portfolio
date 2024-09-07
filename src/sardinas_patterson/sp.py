@@ -1,10 +1,12 @@
-#import argparse
-import json
-import os
-
 
 
 class Codex:
+    """
+    A class to represent a codebook mapping.
+
+    :param codebook: A dictionary representing the codebook, where keys are symbols and values are codewords.
+    :type codebook: dict, optional
+    """
     def __init__(self, codebook=None):
         if codebook is None:
             codebook = {}
@@ -15,19 +17,37 @@ class Codex:
 
 
 class SPChecker:
+    """
+    A class to check if a codebook is uniquely decodable (UD) by using suffix-prefix properties.
 
+    Attributes:
+        codewords: A set of all codewords in the codebook.
+        pairings: A list of pairings of codewords used in factorization.
+        seen: A list of previously seen sets of suffixes during the check process.
+    """
     def __init__(self) -> None:
         self.codewords = None
         self.pairings = []
         self.seen = []
         
     def __flush(self):
+        """
+        Resets the attributes to their initial states.
+        """
         self.codewords = None
         self.pairings = []
         self.seen = []
 
     def find_factorizations(self, remaining_path, current_factorization):
-          if not remaining_path: 
+          """
+            Recursively finds all possible factorizations of the remaining path.
+
+           :param remaining_path: The remaining portion of the string to factorize.
+           :param current_factorization: The current factorization list being built.
+           :return: A list of all possible factorizations.
+           :rtype: list
+          """
+          if not remaining_path:
                 return [current_factorization]
 
           factorizations = []
@@ -38,7 +58,14 @@ class SPChecker:
                         remaining_path[len(cw):], new_factorization)
           return factorizations
 
-    def _factorize(self, path):
+    def __factorize(self, path):
+      """
+        Finds two different factorizations of the given path, if they exist.
+
+        :param path: The path (string) to factorize.
+        :return: A tuple of two different factorizations as strings. If less than two factorizations exist, returns empty strings.
+        :rtype: tuple
+      """
       if not path:
         return None
 
@@ -46,8 +73,7 @@ class SPChecker:
     
       if len(all_factorizations) < 2:
           return '', ''
-      
-        
+
       s1 = ' '.join(all_factorizations[0])
       s2 = ' '.join(all_factorizations[1])
 
@@ -55,8 +81,16 @@ class SPChecker:
 
       
     def next_suffix_set(self, S_i):
+        """
+        Computes the next set of suffixes in the UD check process.
+
+        :param S_i: The current set of suffixes.
+        :return: The next set of suffixes.
+        :rtype: set
+        """
         S_i_plus_1 = set()
         pairs = set()
+
         for a in self.codewords:
             for b in S_i:
                 if a.startswith(b) and a != b:
@@ -70,8 +104,17 @@ class SPChecker:
         self.pairings.append(pairs)
         return S_i_plus_1
 
+
     @staticmethod
     def __get_pair_index(pairing,cw):
+      """
+        Finds the index of a codeword in a pairing list.
+
+        :param pairing: The list of pairings.
+        :param cw: The codeword to find.
+        :return: The index and the corresponding pair as a tuple. If not found, returns (None, None).
+        :rtype: tuple
+      """
       for index,(x,y,w) in enumerate(pairing):
         if cw == w:
           return index,(x,y,w)
@@ -81,7 +124,13 @@ class SPChecker:
           
     
     def _get_not_unique_decomposition(self,cw):
+      """
+        Finds a non-unique decomposition for a given codeword.
 
+        :param cw: The codeword to decompose.
+        :return: A tuple of two different factorizations as strings.
+        :rtype: tuple
+       """
       self.pairings.reverse()
       cws = cw.pop()      
       s = ''
@@ -102,12 +151,18 @@ class SPChecker:
           cws = yi
       
       s = cws + s
-      return  self._factorize(s)
-     
-      
+      return  self.__factorize(s)
+
           
     def is_ud(self, code: Codex):
+        """
+        Checks if the given code is uniquely decodable (UD).
 
+        :param code: The codebook to check, represented as a Codex object.
+        :return: A tuple where the first element is a boolean indicating if the code is UD,
+                 and the second element is either None (if UD) or a tuple of non-unique decompositions.
+        :rtype: tuple
+        """
         S_0 = set(code.mapping.values())
         self.codewords = S_0
         S_i = S_0
@@ -119,6 +174,7 @@ class SPChecker:
             
             if not S_i:
                 self.__flush()
+
                 return True, None
 
             if any(residual in self.codewords for residual in S_i):
@@ -136,44 +192,20 @@ class SPChecker:
         return True, None
 
 
-def main(raw_codes):
+
+def main(code:Codex):
     checker = SPChecker()
-    for code in raw_codes:
-        # Create Codex instances
-        codex = Codex(raw_codes[code])
-        # Check if the code is uniquely decodable
-        is_ud, factorization = checker.is_ud(codex)
-        print("Code:", codex)
-        print("Is UD:", is_ud)
-        if not is_ud:
-            print("Not uniquely decodable. Factorization:", factorization)
-            
-        print("-"*30)
-
-
-def parse_input(file_path):
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"The file {file_path} does not exist.")
-
-    with open(file_path, 'r') as file:
-        data = json.load(file)
-    return data
+    is_ud, decompositions = checker.is_ud(code)
+    print("Code: {}".format(code))
+    print("Is UD: {}".format(is_ud))
+    print("Decompositions: {}".format(decompositions))
 
 
 if __name__ == "__main__":
-    '''
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '--input', help='Path to input JSON file', required=True)
-    args = parser.parse_args()
-    '''
-
-    try:
-        input_data = parse_input("./test/sp_tests.json")#args.input)
-        main(input_data)
-    except FileNotFoundError as e:
-        print(e)
-    except json.JSONDecodeError:
-        print("Error: Failed to decode JSON from the input file.")
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+    cd = Codex( {
+    "A": "0",
+    "B": "01",
+    "C": "011",
+    "D": "0111"
+     })
+    main(cd)

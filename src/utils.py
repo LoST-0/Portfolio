@@ -107,27 +107,61 @@ def plot_results(results: list[list[int]], test_range: list[int], compressors,
 
 
 ###### String Attractors ######
-def get_position_from_bwt(bwt_text:str) -> list :
+def get_runs(bwt_text: str) -> list:
+    """
+    Get the start positions of each run in the BWT text.
 
-    symbols = [bwt_text[0]]
-    current_symbol = bwt_text[0]
-    for char in bwt_text[1:]:
-        if char != current_symbol:
-            symbols.append(char)
-            current_symbol = char
+    Parameters:
+    bwt_text (str): The BWT of the text.
 
-    return symbols
+    Returns:
+    list: Positions corresponding to the beginning of each run in the BWT.
+    """
+    runs = []
+    current_run_char = bwt_text[0]
+    run_start_position = 0
 
-def get_string_attractor_from_bwt(text,bwt_text:str) -> list:
-    simbols = get_position_from_bwt(bwt_text)
-    gamma = []
-    for index,simbol in enumerate(text):
-        if simbol == simbols[0]:
-            gamma.append(index)
-            simbols = simbols[1:]
-            if len(simbols) == 0:
-                break
-    return gamma
+    for i in range(1, len(bwt_text)):
+        if bwt_text[i] != current_run_char:
+            runs.append(run_start_position)
+            current_run_char = bwt_text[i]
+            run_start_position = i
+
+
+    runs.append(run_start_position)
+    return runs
+
+
+def __get_cyclic_rotations(text) -> list:
+
+    return [(text[x:] + text[:x],x) for x in range(len(text))]
+
+
+def get_string_attractor_from_bwt(bwt_text: str, text: str) -> list:
+    """
+    Generate the string attractor based on the BWT of the text.
+
+    Parameters:
+    bwt_text (str): The BWT of the text.
+    text (str): The original text (assumed to include the special symbol $ at the end).
+
+    Returns:
+    list: The positions that form the string attractor.
+    """
+    # Get start positions of each run in the BWT text
+
+    run_positions_in_bwt = get_runs(bwt_text)
+    rotations = __get_cyclic_rotations(text + "$")
+    rotations = sorted(rotations, key=lambda x: x[0])
+    needed = [rotations[i][1] for i in run_positions_in_bwt]
+    needed.remove(0)
+    needed.append(len(text)+1)
+
+
+    # Map BWT positions back to the original text
+
+    return sorted(needed)
+
 
 def get_string_attractor_from_lz(lz_tokens:list) ->list:
     pos = 0  # Current position in the original text

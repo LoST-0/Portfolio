@@ -5,9 +5,6 @@ from src.burrows_wheeler.burrows_wheeler_transform import BWT
 
 
 
-
-
-
 def main():
 
   rs = []

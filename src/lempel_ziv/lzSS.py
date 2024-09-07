@@ -2,12 +2,31 @@ from src.lempel_ziv.lz77naive import  LZ
 
 
 class LZSS(LZ):
-  
+  """
+    Implementation of the LZSS compression algorithm, which is a variant of LZ77.
+    It focuses on generating (offset, length) pairs and single characters to represent the compressed text.
+  """
+
   def __init__(self, window_size) -> None:
+    """
+      Initializes the LZSS class with a specified window size.
+
+      Args:
+          window_size (int): The size of the sliding window used in the compression.
+    """
     super().__init__(window_size)
     self.text_len = None
 
   def __find_pair(self,text):
+    """
+      Finds the (offset, length) pair or a single character for the current position in the text.
+
+      Args:
+          text (str): The text to be compressed.
+
+      Returns:
+          tuple: A tuple containing (offset, length) or (0, next character).
+    """
     
     sb_start = max(0, self.lk_begin - self.W)
     sb = text[sb_start:self.lk_begin]  
@@ -26,6 +45,15 @@ class LZSS(LZ):
   
 
   def compress(self, text: str) -> list:
+      """
+      Compresses the input text using the LZSS algorithm.
+
+      Args:
+          text (str): The text to be compressed.
+
+      Returns:
+          list: A list of tuples where each tuple represents (offset, length) or (0, next character).
+      """
       compressed_text = []
       self.lk_begin = 0
       self.text_len = len(text)
@@ -42,6 +70,15 @@ class LZSS(LZ):
     
   @staticmethod
   def decompress(compressed_text: list) -> str:
+     """
+      Decompresses a list of (offset, length) pairs or single characters back into the original text.
+
+      Args:
+          compressed_text (list): A list of tuples where each tuple represents (offset, length) or (0, next character).
+
+      Returns:
+          str: The decompressed text.
+     """
      output = ""
      for v, p in compressed_text:
        if v:
