@@ -70,7 +70,7 @@ def testcase3(n=8):
 
 
 def main():
-    text = generate_random_text(["a","b","c"],3,10)
+    text = "aaabaaaaaba"# generate_random_text(["a","b","c"],3,10)
     testcase1(text)
     #testcase2()
     #testcase3()
