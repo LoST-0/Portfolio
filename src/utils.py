@@ -151,11 +151,11 @@ def get_string_attractor_from_bwt(bwt_text: str, text: str) -> list:
     # Get start positions of each run in the BWT text
 
     run_positions_in_bwt = get_runs(bwt_text)
+
     rotations = __get_cyclic_rotations(text + "$")
     rotations = sorted(rotations, key=lambda x: x[0])
     needed = [rotations[i][1] for i in run_positions_in_bwt]
-    needed.remove(0)
-    needed.append(len(text)+1)
+
 
 
     # Map BWT positions back to the original text

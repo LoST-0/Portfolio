@@ -27,7 +27,7 @@ def testcase1(text):
     print(f"lz_gamma: {lz_gamma},  z:{z}")
 
     checker.positions = bwt_gamma
-    bwtg = checker.is_string_attractor_for(text + "$")
+    bwtg = checker.is_string_attractor_for(text )
 
     checker.positions = lz_gamma
     lzg  = checker.is_string_attractor_for(text)
@@ -70,10 +70,10 @@ def testcase3(n=8):
 
 
 def main():
-    text = "aaabaaaaaba"# generate_random_text(["a","b","c"],3,10)
+    text = "0101101101"
     testcase1(text)
-    #testcase2()
-    #testcase3()
+    testcase2()
+    testcase3()
 
     return
 
