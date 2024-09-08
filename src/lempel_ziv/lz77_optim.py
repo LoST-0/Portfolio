@@ -53,7 +53,7 @@ class LZ77(LZ77Naive):
 
 
 def main():
-  text = ("abracadabrarrarrararrarrarrarrarrar")
+  text = "aababbbabaababbbabbabb"
   compressor = LZ77(32)
   compressed_text = compressor.compress(text)
   decompresses_text = compressor.decompress(compressed_text)

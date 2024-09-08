@@ -27,10 +27,10 @@ class LZSS(LZ):
       Returns:
           tuple: A tuple containing (offset, length) or (0, next character).
     """
-    
-    sb_start = max(0, self.lk_begin - self.W)
-    sb = text[sb_start:self.lk_begin]  
-    lkb = text[self.lk_begin:]  
+
+    sb_start = max(0, self.lk_begin - (self.W // 2))
+    sb = text[sb_start:self.lk_begin]
+    lkb = text[self.lk_begin:self.lk_begin + (self.W // 2)]
 
     if not lkb:
         return None  
@@ -91,8 +91,8 @@ class LZSS(LZ):
 
 
 def main():
-  text = "aaaaaaaabbbbbbbb"
-  compressor = LZSS(16)
+  text = "abracadabracadadabra"
+  compressor = LZSS(32)
   compressed_text = compressor.compress(text)
   decompresses_text = compressor.decompress(compressed_text)
   assert text == decompresses_text, "Ops, something went wrong!"
